@@ -15,6 +15,7 @@ Color darkGreen = {43, 51, 24, 255};
 
 int cellSize = 30;
 int cellCount = 25;
+int offset = 75;
 
 double lastUpdateTime = 0;
 
@@ -58,7 +59,7 @@ public:
         {
             float x = body[i].x;
             float y = body[i].y;
-            Rectangle segment = Rectangle{x*cellSize, y*cellSize, (float)cellSize, (float)cellSize};
+            Rectangle segment = Rectangle{offset + x*cellSize, offset + y*cellSize, (float)cellSize, (float)cellSize};
             DrawRectangleRounded(segment, 0.5,6, darkGreen); // why cellsize, cellsize?
         }
     }
@@ -86,8 +87,6 @@ public:
     
 };
 
-
-
 class Food{
     
     public:
@@ -113,7 +112,7 @@ class Food{
         void Draw()
         {
             //DrawRectangle(position.x * cellSize, position.y * cellSize, cellSize, cellSize, darkGreen);
-            DrawTexture(texture, position.x *cellSize, position.y*cellSize, WHITE);
+            DrawTexture(texture, offset + position.x *cellSize, offset + position.y*cellSize, WHITE);
         }
 
         Vector2 GenerateRandomCell()
@@ -142,7 +141,6 @@ class Food{
 
 };
 
-
 // Game class is a container for all the elements of the game
 //  holds methods that update the game's logic (ie position, collision checks, etc)
 class Game
@@ -151,6 +149,7 @@ class Game
         Snake snake = Snake();
         Food food = Food(snake.body);
         bool running = true; //if game is runing or not
+        int score = 0;
 
         void Draw()
         {
@@ -175,6 +174,7 @@ class Game
             {
                 food.position = food.GenerateRandomPos(snake.body);
                 snake.addSegment = true;
+                score++;
             }
         }
 
@@ -195,6 +195,7 @@ class Game
             snake.Reset();
             food.position = food.GenerateRandomPos(snake.body);
             running = false;
+            score = 0;
         }
 
         void CheckColissionWithTail()
@@ -216,7 +217,7 @@ class Game
 int main () {
 
     cout << " Starting the game.... " << endl;
-    InitWindow(cellCount*cellSize,cellCount*cellSize,"Retro Snake");
+    InitWindow(2*offset + cellCount*cellSize,2*offset + cellCount*cellSize,"Retro Snake");
     SetTargetFPS(60); // Setting the frame rate
 
     Game game = Game();
@@ -259,8 +260,11 @@ int main () {
 
         //Drawing 
         ClearBackground(green);
+        DrawRectangleLinesEx(Rectangle{(float)offset-5, (float)offset-5, (float)cellSize*cellCount+10, (float)cellSize*cellCount+10},5,darkGreen);
         // food.Draw(); // calls draw method of food object
         // snake.Draw();
+        DrawText("Retro Snake", offset -5, 20, 40, darkGreen); //text, posX, posY, fontSize, color
+        DrawText(TextFormat("%i",game.score), offset-5, offset+cellSize*cellCount+10,40.darkGreen);
         game.Draw();
 
 
