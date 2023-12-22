@@ -1,0 +1,36 @@
+Snake Game
+1. Create blank canvas & game loop
+2. Creating the food
+3. Creating the Snake
+4. Moving the Snake
+5. Making the Snake eat the food
+6. Making the Snake grow longer
+7. Cheking for collision w/ edges & tail
+8. Adding title & frame
+9. Keeping score
+10. Addings sounds
+
+
+
+
+-----------------------------------------------------------------------
+
+Game structure
+
+Definitions
+    - Defining the variables needed
+    - Creating the game objects
+
+Game loop
+    - Updating the positions of the game objects
+    - Checking for collisions
+
+    - Event Handling - check for any events that occur in the game (keypressed, etc)
+    - updating positions
+    - drawing objects
+
+------------------------------------------------------------------------------
+
+COLORS
+
+struct Color{red,green,blue,alpha}
