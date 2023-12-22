@@ -18,6 +18,17 @@ int cellCount = 25;
 
 double lastUpdateTime = 0;
 
+bool ElementInDeque(Vector2 element, deque<Vector2> deque)
+{
+    for(unsigned int i = 0; i<deque.size(); i++)
+    {
+        if(Vector2Equals(deque[i], element))
+        {
+            return true;
+        }
+    }
+}
+
 bool eventTriggered(double interval)
 {
     double currentTime = GetTime();
@@ -68,12 +79,12 @@ class Food{
         Texture2D texture;
 
         // Contructor - to initialize an object of the same class name. automatically called when an instance of the class is created
-        Food()
+        Food(deque<Vector2> snakeBody)
         {
             Image image = LoadImage("Graphics/food.png");
             texture = LoadTextureFromImage(image);
             UnloadImage(image); // unload image to free some memory
-            position = GenerateRandomPos();
+            position = GenerateRandomPos(snakeBody);
 
         }
 
@@ -89,13 +100,25 @@ class Food{
             DrawTexture(texture, position.x *cellSize, position.y*cellSize, WHITE);
         }
 
-        Vector2 GenerateRandomPos()
+        Vector2 GenerateRandomCell()
         {
-            
             float x = GetRandomValue(0, cellCount - 1);
             float y = GetRandomValue(0, cellCount - 1);
+            return Vector2{x,y};
+        }
+
+        Vector2 GenerateRandomPos(deque<Vector2> snakeBody)
+        {
             
-            return Vector2{x, y};
+            
+            Vector2 position = GenerateRandomCell();
+
+            while(ElementInDeque(position, snakeBody))
+            {
+                position = GenerateRandomCell();
+            }
+
+            return position;
 
         }
 
@@ -110,7 +133,7 @@ class Game
 {
     public:
         Snake snake = Snake();
-        Food food = Food();
+        Food food = Food(snake.body);
 
         void Draw()
         {
@@ -121,6 +144,15 @@ class Game
         void Update()
         {
             snake.Update();
+            CheckCollisionWithFood();
+        }
+
+        void CheckCollisionWithFood()
+        {
+            if(Vector2Equals(snake.body[0], food.position))
+            {
+                food.position = food.GenerateRandomPos(snake.body);
+            }
         }
     private:
 };
@@ -132,8 +164,7 @@ int main () {
     InitWindow(cellCount*cellSize,cellCount*cellSize,"Retro Snake");
     SetTargetFPS(60); // Setting the frame rate
 
-    Food food = Food(); //creates food object
-    Snake snake = Snake();
+    Game game = Game();
 
     while(WindowShouldClose() == false)
     {
@@ -141,37 +172,37 @@ int main () {
 
         if(eventTriggered(0.2))
         {
-            snake.Update();
+            game.Update();
         }
 
-        if(IsKeyPressed(KEY_UP) && snake.direction.y != 1)
+        if(IsKeyPressed(KEY_UP) && game.snake.direction.y != 1)
         {
-            snake.direction = {0, -1}; // indicating that the snake should upwards
+            game.snake.direction = {0, -1}; // indicating that the snake should upwards
             // the Vector2 struct represents a 2D vector with x & y components
             // origin is on the top left corner
         }
 
-        if(IsKeyPressed(KEY_DOWN) && snake.direction.y != -1)
+        if(IsKeyPressed(KEY_DOWN) && game.snake.direction.y != -1)
         {
-            snake.direction = {0, 1};
+            game.snake.direction = {0, 1};
         }
 
-        if(IsKeyPressed(KEY_LEFT) && snake.direction.x != 1)
+        if(IsKeyPressed(KEY_LEFT) && game.snake.direction.x != 1)
         {
-            snake.direction = {-1, 0};
+            game.snake.direction = {-1, 0};
         }
 
-        if(IsKeyPressed(KEY_RIGHT) && snake.direction.x != -1)
+        if(IsKeyPressed(KEY_RIGHT) && game.snake.direction.x != -1)
         {
-            snake.direction = {1, 0};
+            game.snake.direction = {1, 0};
         }
 
 
         //Drawing 
         ClearBackground(green);
-        food.Draw(); // calls draw method of food object
-        snake.Draw();
-
+        // food.Draw(); // calls draw method of food object
+        // snake.Draw();
+        game.Draw();
 
 
         EndDrawing();
