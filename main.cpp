@@ -26,7 +26,9 @@ bool ElementInDeque(Vector2 element, deque<Vector2> deque)
         {
             return true;
         }
+
     }
+    return false;
 }
 
 bool eventTriggered(double interval)
